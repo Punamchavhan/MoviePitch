@@ -1,9 +1,9 @@
-import { process } from '/env'
+import { process } from './env'
 import { Configuration, OpenAIApi } from 'openai'
 
 
 
-const setupTextarea = document.getElementById('setup-textarea')
+
 const setupInputContainer = document.getElementById('setup-input-container')
 const movieBossText = document.getElementById('movie-boss-text')
 
@@ -17,6 +17,7 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration)
 
 document.getElementById("send-btn").addEventListener("click", () => {
+  const setupTextarea = document.getElementById('setup-textarea')
   if (setupTextarea.value) {
     const userInput = setupTextarea.value
   setupInputContainer.innerHTML = `<img src="images/loading.svg" class="loading" id="loading">`
@@ -40,12 +41,30 @@ async function fetchBotReply(outline) {
 async function fetchSynopsis(outline) {
 
   const response = await openai.createCompletion({
-    'model': 'text-davinci-003',
-    'prompt': `Generate an engaging, professional and marketable movie synopsis based on the following idea: ${outline}`,
+    'model' : 'text-davinci-003',
+
+    'prompt': `Generate an engaging, professional and marketable movie synopsis based on following "${ outline}`,
+    
     'max_tokens': 700
+
+   
   })
 
 
-  document.getElementById('output-text').innerText = response.data.choices[0].text.trim()
+  const synopsis= response.data.choices[0].text.trim()
+  document.getElementById('output-text').innerText= synopsis
+
+  fetchTitle(synopsis)
+}
+async function fetchTitle(synopsis){
+  const response = await openai.createCompletion({
+    'model' : 'text-davinci-003',
+    'prompt' : `generate a title baseed on "${synopsis}" it should be gripping, flashy and alluring`,
+    'max_tokens' : 25,
+    'temperature' :0.7
+
+  })
+
+  document.getElementById('output-title').innerText = response.data.choices[0].text.trim()
 
 }
