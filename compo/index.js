@@ -35,44 +35,42 @@ async function fetchBotReply(outline) {
     'max_tokens': 60
   })
   movieBossText.innerText = response.data.choices[0].text.trim()
-  console.log(response)
+  
 }
-
 async function fetchSynopsis(outline) {
-
   const response = await openai.createCompletion({
-    'model' : 'text-davinci-003',
+    'model': 'text-davinci-003',
+    'prompt': `Generate an engaging, professional and marketable movie synopsis based on an outline. The synopsis should include actors names in brackets after each character. Choose actors that would be ideal for this role. 
+    ###
+    'outline': 'A big-headed daredevil fighter pilot goes back to school only to be sent on a deadly mission.'
+    'synopsis': 'The Top Gun Naval Fighter Weapons School is where the best of the best train to refine their elite flying skills. When hotshot fighter pilot Maverick (Tom Cruise) is sent to the school, his reckless attitude and cocky demeanor put him at odds with the other pilots, especially the cool and collected Iceman (Val Kilmer). But Maverick isn't only competing to be the top fighter pilot, he's also fighting for the attention of his beautiful flight instructor, Charlotte Blackwood (Kelly McGillis). Maverick gradually earns the respect of his instructors and peers - and also the love of Charlotte, but struggles to balance his personal and professional life. As the pilots prepare for a mission against a foreign enemy, Maverick must confront his own demons and overcome the tragedies rooted deep in his past to become the best fighter pilot and return from the mission triumphant. '
+    ###
+    'outline': ${outline}
+    'synopsis': 
 
-    'prompt': `Generate an engaging, professional and marketable movie synopsis based on following "${ outline} synopsis should include actors names in brackets after each charecter. 
-    Choose charecters that would be ideal for this role`,
-    
-    'max_tokens': 700
-
-   
+    `,
+    max_tokens: 700
   })
-
-
-  const synopsis= response.data.choices[0].text.trim()
-  document.getElementById('output-text').innerText= synopsis
-
+  const synopsis = response.data.choices[0].text.trim()
+  document.getElementById('output-text').innerText = synopsis
   fetchTitle(synopsis)
   fetchStars(synopsis)
 }
-async function fetchTitle(synopsis){
-  const response = await openai.createCompletion({
-    'model' : 'text-davinci-003',
-    'prompt' : `generate a title baseed on "${synopsis}" it should be gripping, flashy and alluring`,
-    'max_tokens' : 25,
-    'temperature' :0.7
 
+
+async function fetchTitle(synopsis) {
+  const response = await openai.createCompletion({
+    model: 'text-davinci-003',
+    prompt: `Generate a catchy movie title for this synopsis: ${synopsis}`,
+    max_tokens: 25,
+    temperature: 0.7
   })
-  const title= response.data.choices[0].text.trim()
+  const title = response.data.choices[0].text.trim()
   document.getElementById('output-title').innerText = title
   fetchImagePromt(title, synopsis)
-
 }
 
-async function fetchStars(){
+async function fetchStars(synopsis){
   const response = await openai.createCompletion({
     'model': 'text-davinci-003',
     'prompt': `extract the names of the actors from "${synopsis}`,
@@ -83,8 +81,8 @@ async function fetchStars(){
 
 async function fetchImagePromt(title, synopsis){
   const response = await openai.createCompletion({
-    'model': 'text-davinci-003',
-    'prompt': `Give a short description of an image which could be used to advertise a movie based on a title and synopsis. The description should be rich in visual detail but contain no names.
+    model: 'text-davinci-003',
+    prompt: `Give a short description of an image which could be used to advertise a movie based on a title and synopsis. The description should be rich in visual detail but contain no names.
     ###
     title: Love's Time Warp
     synopsis: When scientist and time traveller Wendy (Emma Watson) is sent back to the 1920s to assassinate a future dictator, she never expected to fall in love with them. As Wendy infiltrates the dictator's inner circle, she soon finds herself torn between her mission and her growing feelings for the leader (Brie Larson). With the help of a mysterious stranger from the future (Josh Brolin), Wendy must decide whether to carry out her mission or follow her heart. But the choices she makes in the 1920s will have far-reaching consequences that reverberate through the ages.
@@ -98,8 +96,8 @@ async function fetchImagePromt(title, synopsis){
     synopsis: ${synopsis}
     image description: 
     `,
-    'temperature': 0.8,
-    'max_tokens' : 100
+    temperature: 0.8,
+    max_tokens : 100
 
   })
 
