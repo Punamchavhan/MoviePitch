@@ -66,7 +66,7 @@ async function fetchTitle(synopsis) {
     temperature: 0.7
   })
   const title = response.data.choices[0].text.trim()
-  document.getElementById('output-title').innerText = title
+  document.getElementById('output-title').innerText = response.data.choices[0].text.trim()
   fetchImagePromt(title, synopsis)
 }
 
